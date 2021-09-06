@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 
-import '../screens/chat_screen.dart';
-
 class AuthForm extends StatefulWidget {
-  const AuthForm(this.submitAuthForm, {Key? key}) : super(key: key);
+  const AuthForm(this.submitAuthForm, this.isLoading, {Key? key})
+      : super(key: key);
+  final bool isLoading;
   final void Function({
     required String username,
     required String email,
@@ -22,9 +22,9 @@ class _AuthFormState extends State<AuthForm> {
     if (isValid) {
       _formKey.currentState!.save();
       widget.submitAuthForm(
-        username: _username,
-        password: _userPass,
-        email: _userEmail,
+        username: _username.trim(),
+        password: _userPass.trim(),
+        email: _userEmail.trim(),
         isLogin: _isLogin,
       );
       // Navigator.of(context).pushNamed(ChatScreen.routeName);
@@ -89,20 +89,23 @@ class _AuthFormState extends State<AuthForm> {
                         _userPass = value!;
                       }),
                   SizedBox(height: 20),
-                  ElevatedButton(
-                    child: Text(_isLogin ? 'Login' : 'Sign up'),
-                    onPressed: _trySubmit,
-                  ),
-                  TextButton(
-                    child: Text(_isLogin ? 'Sign up now!' : 'Login instead!',
-                        style:
-                            TextStyle(color: Theme.of(context).primaryColor)),
-                    onPressed: () {
-                      setState(() {
-                        _isLogin = !_isLogin;
-                      });
-                    },
-                  )
+                  widget.isLoading
+                      ? CircularProgressIndicator()
+                      : ElevatedButton(
+                          child: Text(_isLogin ? 'Login' : 'Sign up'),
+                          onPressed: _trySubmit,
+                        ),
+                  if (!widget.isLoading)
+                    TextButton(
+                      child: Text(_isLogin ? 'Sign up now!' : 'Login instead!',
+                          style:
+                              TextStyle(color: Theme.of(context).primaryColor)),
+                      onPressed: () {
+                        setState(() {
+                          _isLogin = !_isLogin;
+                        });
+                      },
+                    )
                 ],
               ),
             ),

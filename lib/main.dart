@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 import './screens/chat_screen.dart';
 import './screens/auth_screen.dart';
@@ -41,11 +42,11 @@ class MyApp extends StatelessWidget {
                     child: CircularProgressIndicator(),
                   ),
                 )
-              : AuthScreen(),
-          routes: {
-            AuthScreen.routeName: (ctx) => AuthScreen(),
-            ChatScreen.routeName: (ctx) => ChatScreen()
-          },
+              : StreamBuilder(
+                  stream: FirebaseAuth.instance.authStateChanges(),
+                  builder: (ctx, authSnapshot) {
+                    return authSnapshot.hasData ? ChatScreen() : AuthScreen();
+                  }),
         );
       },
     );
